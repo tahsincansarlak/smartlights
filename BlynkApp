@@ -1,0 +1,92 @@
+/*NOLOP Makerspace ESP8266 Workshop
+ * Topic: How to control a servo via Blynk app from your phone
+ * Date : 10/08/2019
+ * Prepared by Tahsin Can Sarlak 
+*/
+
+// Includes the necessary libraries
+#define BLYNK_PRINT Serial
+
+// Gets the wifi and Blynk app libraries
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+// Gets the servo library
+#include <Servo.h>
+
+// Sets up my Auth Token I got from Blynk App
+char auth[] = "My Auth Token";
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "My Wifi Name";
+char pass[] = "My Wifi Password (Leave it blank if there is no password) ";
+
+// Variable : Angle of the servo
+int pos = 0;
+
+// Variable: The upper limit of servo angle determined by user - at most 180 in theory in reality until 160 to 170
+int degree = 90;
+
+// create servo object to control a servo
+Servo myservo;  
+
+// Sets up the necessary objects
+void setup()
+{
+  // attaches the servo on GIO16 to the servo object
+  myservo.attach(16);  
+
+  // Calls Blynk app by passing auth,ssid and pass
+  Blynk.begin(auth, ssid, pass);
+}
+
+// Calls this function all the time in a loop
+void loop()
+{
+  // Runs the Blynk app
+  Blynk.run();
+}
+
+// Reads the Virtual Pin controlled by Blynk App
+BLYNK_WRITE(V1)
+{
+  // Assigns the read value from Blynk App
+  int lights = param.asInt(); 
+  
+  // Controls the motor according to variable assigned through Blynk App
+  if (lights == 1){
+    down();
+     }
+  else if (lights == 2){
+    up();
+  }
+}
+
+//turns motor clockwise
+void up() {
+   
+    // goes from 0 degrees to 'degree' in steps of 1 degree
+    for (pos = 0; pos <= degree; pos += 1) { 
+     
+      // tell servo to go to position in variable 'pos'
+      myservo.write(pos);     
+    
+      // waits 15ms for the servo to reach the position         
+      delay(15);                       
+  }
+}
+
+//turns motor counterclocwise
+void down(){   
+
+  // goes from 'degree' variable to 0 degrees
+  for (pos = degree; pos >= 0; pos -= 1) { 
+    
+    // tell servo to go to position in variable 'pos'
+    myservo.write(pos);              
+
+    // waits 15ms for the servo to reach the position
+    delay(15);                       
+  }
+}
